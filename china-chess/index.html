@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>中国象棋教学网</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>中国象棋教学网</h1>
+        <nav>
+            <ul>
+                <li><a href="#history" onclick="showSection('history')">历史典故</a></li>
+                <li><a href="#tutorial" onclick="showSection('tutorial')">入门教程</a></li>
+                <li><a href="#animation" onclick="showSection('animation')">动画演示</a></li>
+                <li><a href="#step-by-step" onclick="showSection('step-by-step')">分步教学</a></li>
+                <li><a href="#opening" onclick="showSection('opening')">开局库</a></li>
+                <li><a href="#play" onclick="showSection('play')">对弈练习</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <!-- 历史典故 -->
+        <section id="history" class="section active">
+            <h2>中国象棋的历史典故</h2>
+            <div class="history-content">
+                <div class="history-item">
+                    <h3>起源传说</h3>
+                    <p>关于中国象棋的起源，有多种传说。一种说法是起源于传说时代的神农氏，元代僧人念常在《佛祖历代通载》中说："神农以日月星辰为象，唐相国牛僧孺用车、马、士、卒加炮代之为机矣"。</p>
+                    <p>另一种说法是起源于黄帝时期，北宋晃补之《广象戏格·序》说："象戏兵戏也，黄帝之战，驱猛兽以为阵，象，兽之雄也。故戏兵以象戏名之。"</p>
+                </div>
+                
+                <div class="history-item">
+                    <h3>最早的记载</h3>
+                    <p>战国时期的文献中已经有关于类似象棋的游戏记载。《楚辞·招魂》中有"蓖蔽象棋，有六簿些；分曹并进，遒相迫些；成枭而牟，呼五白些"的描述。</p>
+                    <p>虽然这与现代象棋有所不同，但证明了中国古代早已有类似的棋类活动。</p>
+                </div>
+                
+                <div class="history-item">
+                    <h3>唐代的发展</h3>
+                    <p>唐代是中国象棋发展的重要时期。唐代的象棋形制与早期的国际象棋有相似之处。当时的象棋是将、马、车、卒四个兵种，与现代象棋不同。</p>
+                    <p>唐代宰相牛僧孺所著《玄怪录》中记载了一则以象棋为背景的故事，这是目前所知最早的关于象棋形制的具体记载。</p>
+                </div>
+                
+                <div class="history-item">
+                    <h3>宋代的成熟</h3>
+                    <p>北宋时期，象棋在民间逐渐流行，并在形制上发生了重大变化。北宋时期的象棋棋盘已经有了楚河汉界，棋子增加了"炮"，形成了与现代象棋非常接近的形制。</p>
+                    <p>到了南宋时期，象棋已经基本定型，与现代象棋大致相同。南宋著名词人李清照在《打马图经》中详细记载了象棋的玩法。</p>
+                </div>
+                
+                <div class="history-item">
+                    <h3>明清时期的繁荣</h3>
+                    <p>明代是中国象棋的繁荣时期，出现了许多著名的象棋谱，如《适情雅趣》、《橘中秘》等。这些棋谱对后世影响深远，至今仍是象棋爱好者的必读之书。</p>
+                    <p>清代时期，象棋进一步发展，出现了更多优秀的棋手和棋谱，如《梅花谱》、《韬略元机》等，对象棋理论的发展做出了重要贡献。</p>
+                </div>
+                
+                <div class="history-item">
+                    <h3>现代象棋</h3>
+                    <p>20世纪以来，中国象棋得到了进一步的发展。1956年，象棋被列为国家体育项目，1962年成立了中国象棋协会，象棋运动开始走向规范化和专业化。</p>
+                    <p>如今，中国象棋不仅是中国人喜爱的棋类活动，也逐渐传播到世界各地，成为世界范围内的智力运动。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 入门教程 -->
+        <section id="tutorial" class="section">
+            <h2>极简入门教程</h2>
+            <div class="tutorial-content">
+                <div class="tutorial-item">
+                    <h3>1. 棋盘介绍</h3>
+                    <p>中国象棋棋盘由九条平行的竖线和十条平行的横线相交组成，共有九十个交叉点。棋盘中间有一条河界，称为"楚河汉界"，将棋盘分为红黑两方。</p>
+                    <p>棋盘两端的中间部分，有"米"字格的地方称为"九宫"，是将（帅）和士（仕）活动的区域。</p>
+                    <div class="chessboard-small">
+                        <canvas id="tutorial-board-1" width="200" height="220"></canvas>
+                    </div>
+                </div>
+                
+                <div class="tutorial-item">
+                    <h3>2. 棋子介绍</h3>
+                    <p>中国象棋的棋子共有32个，分为红、黑两组，每组各16个，由对弈的双方各执一组。兵种是一样的，红方用汉字，黑方用另一种汉字（或同一字的异体字）表示。</p>
+                    <p>红方：帅(1)、仕(2)、相(2)、车(2)、马(2)、炮(2)、兵(5)</p>
+                    <p>黑方：将(1)、士(2)、象(2)、车(2)、马(2)、炮(2)、卒(5)</p>
+                    <div class="chessboard-small">
+                        <canvas id="tutorial-board-2" width="360" height="400"></canvas>
+                    </div>
+                </div>
+                
+                <div class="tutorial-item">
+                    <h3>3. 基本走法 - 将/帅</h3>
+                    <p>将（帅）是棋局的核心，也是双方争夺的目标。它只能在"九宫"内活动，每着只许走一格，前进、后退、横走都可以，但不能走出"九宫"。</p>
+                    <p>特殊规则：将和帅不准在同一直线上直接对面，如一方已先占据，另一方必须回避，否则判负。</p>
+                    <div class="chessboard-small">
+                        <canvas id="tutorial-board-3" width="360" height="400"></canvas>
+                        <div class="move-info">将/帅：在九宫内走一格，横竖均可</div>
+                    </div>
+                </div>
+                
+                <div class="tutorial-item">
+                    <h3>4. 基本走法 - 士/仕</h3>
+                    <p>士（仕）也只能在"九宫"内活动，它的行棋路径是"九宫"内的斜线，每着只许走一格，只能斜走，不能直走或横走。</p>
+                    <p>红方为"仕"，黑方为"士"，但走法完全相同。</p>
+                    <div class="chessboard-small">
+                        <canvas id="tutorial-board-4" width="360" height="400"></canvas>
+                        <div class="move-info">士/仕：在九宫内斜走一格</div>
+                    </div>
+                </div>
+                
+                <div class="tutorial-item">
+                    <h3>5. 基本走法 - 象/相</h3>
+                    <p>象（相）不能越过"楚河汉界"，每着走"田"字对角线，俗称"象走田"。</p>
+                    <p>特殊规则：如果"田"字中心有别的棋子（无论己方或对方），象就不能飞过去，俗称"塞象眼"。</p>
+                    <p>红方为"相"，黑方为"象"，但走法完全相同。</p>
+                    <div class="chessboard-small">
+                        <canvas id="tutorial-board-5" width="360" height="400"></canvas>
+                        <div class="move-info">象/相：走田字格，可被塞象眼</div>
+                    </div>
+                </div>
+                
+                <div class="tutorial-item">
+                    <h3>6. 基本走法 - 车</h3>
+                    <p>车是中国象棋中威力最大的棋子，横、竖均可以走，步数不受限制，只要无子阻拦，行走的路线上有敌方棋子，即可吃掉它。</p>
+                    <p>车的价值约为9分，是所有棋子中价值最高的（除将帅外）。</p>
+                    <div class="chessboard-small">
+                        <canvas id="tutorial-board-6" width="360" height="400"></canvas>
+                        <div class="move-info">车：横竖直走，不限步数</div>
+                    </div>
+                </div>
+                
+                <div class="tutorial-item">
+                    <h3>7. 基本走法 - 马</h3>
+                    <p>马每着走"日"字对角线，俗称"马走日"。马可以横走或竖走一格，然后再斜走一格（即"日"字的对角线）。</p>
+                    <p>特殊规则：如果在要去的方向有别的棋子挡住，马就不能走过去，俗称"蹩马腿"。</p>
+                    <p>马的价值约为4分。</p>
+                    <div class="chessboard-small">
+                        <canvas id="tutorial-board-7" width="360" height="400"></canvas>
+                        <div class="move-info">马：走日字格，可被蹩马腿</div>
+                    </div>
+                </div>
+                
+                <div class="tutorial-item">
+                    <h3>8. 基本走法 - 炮</h3>
+                    <p>炮在不吃子的时候，走法与车完全相同，横、竖均可以走，步数不受限制。</p>
+                    <p>特殊规则：炮在吃子时，必须有一个棋子（无论己方或对方）作为"炮架"，俗称"炮打隔子"。</p>
+                    <p>炮的价值约为4.5分，比马略高。</p>
+                    <div class="chessboard-small">
+                        <canvas id="tutorial-board-8" width="360" height="400"></canvas>
+                        <div class="move-info">炮：不吃子同车，吃子需隔子</div>
+                    </div>
+                </div>
+                
+                <div class="tutorial-item">
+                    <h3>9. 基本走法 - 兵/卒</h3>
+                    <p>兵（卒）在没过河之前，每着只许向前走一格；过河之后，每着可以向前走一格，也可以横走一格，但不能后退。</p>
+                    <p>红方为"兵"，黑方为"卒"，但走法完全相同。</p>
+                    <p>兵（卒）的价值随着位置不同而变化，过河后的兵卒价值大增，尤其在残局阶段，一个过河兵（卒）往往能起到关键作用。</p>
+                    <div class="chessboard-small">
+                        <canvas id="tutorial-board-9" width="360" height="400"></canvas>
+                        <div class="move-info">兵/卒：未过河前进一步，过河后可横走</div>
+                    </div>
+                </div>
+                
+                <div class="tutorial-item">
+                    <h3>10. 基本规则</h3>
+                    <p><strong>胜负判定：</strong></p>
+                    <p>1. 帅（将）被对方"将死"——轮到走棋的一方，帅（将）正被对方"将军"，如果无法应将，就算输棋。</p>
+                    <p>2. 被困毙——轮到走棋的一方，如果无子可动，就算输棋。</p>
+                    <p>3. 走棋违反禁例，应当变着而不变，则判负。</p>
+                    <p>4. 在同一局棋中，单方面三次"长将"、"长捉"，则判负。</p>
+                    <p>5. 双方均无取胜可能的简单局势，可以判和。</p>
+                    <p>6. 一方提议作和，另一方表示同意，可以判和。</p>
+                    <p>7. 双方走棋出现循环反复已达三次，符合"棋例"中"不变作和"的有关规定，可以判和。</p>
+                    
+                    <p><strong>行棋规则：</strong></p>
+                    <p>1. 对局开始前，双方棋子在棋盘上的摆法有严格规定。</p>
+                    <p>2. 对局时，由执红棋的一方先走，双方轮流各走一着，直至分出胜负或走成和棋。</p>
+                    <p>3. 轮到走棋的一方，将某个棋子从一个交叉点走到另一个交叉点，或者吃掉对方的棋子而占领其交叉点，都算走了一着。</p>
+                    <p>4. 双方各走一着，称为一个回合。</p>
+                    <p>5. 走一着棋时，如果己方棋子能够走到的位置有对方棋子存在，就可以把对方棋子吃掉而占领那个位置。</p>
+                    <p>6. 只有炮吃子时必须隔一个棋子（无论是哪一方的）跳吃，即俗称"炮打隔子"。</p>
+                    <p>7. 除帅（将）外，其他棋子都可以听任对方吃，或主动送吃。</p>
+                    <p>8. 吃子的一方，必须立即把被吃掉的棋子从棋盘上拿走。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 动画演示 -->
+        <section id="animation" class="section">
+            <h2>动画演示</h2>
+            <div class="animation-content">
+                <div class="animation-controls">
+                    <h3>选择演示内容</h3>
+                    <select id="animation-select">
+                        <option value="horse-move">马的走法（日字）</option>
+                        <option value="horse-block">蹩马腿示例</option>
+                        <option value="elephant-move">象的走法（田字）</option>
+                        <option value="elephant-block">塞象眼示例</option>
+                        <option value="cannon-move">炮的走法与吃子</option>
+                        <option value="checkmate">将死示例</option>
+                        <option value="stalemate">困毙示例</option>
+                        <option value="discovery">抽将示例</option>
+                    </select>
+                    
+                    <div class="animation-buttons">
+                        <button id="play-animation" onclick="playAnimation()">播放演示</button>
+                        <button id="pause-animation" onclick="pauseAnimation()">暂停</button>
+                        <button id="reset-animation" onclick="resetAnimation()">重置</button>
+                    </div>
+                    
+                    <div class="animation-speed">
+                        <label for="speed-range">动画速度：</label>
+                        <input type="range" id="speed-range" min="1" max="5" value="3">
+                        <span id="speed-value">中</span>
+                    </div>
+                </div>
+                
+                <div class="animation-board">
+                    <canvas id="animation-board" width="360" height="400"></canvas>
+                    <div id="animation-description" class="move-info"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 分步教学 -->
+        <section id="step-by-step" class="section">
+            <h2>分步教学</h2>
+            <div class="step-by-step-content">
+                <div class="lesson-select">
+                    <h3>选择课程</h3>
+                    <select id="lesson-select">
+                        <option value="lesson1">第一课：认识棋盘和棋子</option>
+                        <option value="lesson2">第二课：车和马的走法</option>
+                        <option value="lesson3">第三课：炮和兵的走法</option>
+                        <option value="lesson4">第四课：将、士、象的走法</option>
+                        <option value="lesson5">第五课：基本杀法（一）</option>
+                        <option value="lesson6">第六课：基本杀法（二）</option>
+                        <option value="lesson7">第七课：基本战术（一）</option>
+                        <option value="lesson8">第八课：基本战术（二）</option>
+                    </select>
+                </div>
+                
+                <div class="lesson-content">
+                    <div class="lesson-steps">
+                        <div id="lesson-step-1" class="lesson-step active">
+                            <h3>步骤 1</h3>
+                            <div id="step-description-1"></div>
+                        </div>
+                        <div id="lesson-step-2" class="lesson-step">
+                            <h3>步骤 2</h3>
+                            <div id="step-description-2"></div>
+                        </div>
+                        <div id="lesson-step-3" class="lesson-step">
+                            <h3>步骤 3</h3>
+                            <div id="step-description-3"></div>
+                        </div>
+                        <div id="lesson-step-4" class="lesson-step">
+                            <h3>步骤 4</h3>
+                            <div id="step-description-4"></div>
+                        </div>
+                        <div id="lesson-step-5" class="lesson-step">
+                            <h3>步骤 5</h3>
+                            <div id="step-description-5"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="lesson-controls">
+                        <button id="prev-step" onclick="prevStep()">上一步</button>
+                        <button id="next-step" onclick="nextStep()">下一步</button>
+                        <button id="reset-lesson" onclick="resetLesson()">重置课程</button>
+                    </div>
+                </div>
+                
+                <div class="lesson-board">
+                    <canvas id="lesson-board" width="360" height="400"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- 开局库 -->
+        <section id="opening" class="section">
+            <h2>开局库</h2>
+            <div class="opening-content">
+                <div class="opening-categories">
+                    <h3>开局分类</h3>
+                    <ul>
+                        <li class="active" onclick="selectOpeningCategory('popular')">流行开局</li>
+                        <li onclick="selectOpeningCategory('classic')">经典开局</li>
+                        <li onclick="selectOpeningCategory('attacking')">攻杀型开局</li>
+                        <li onclick="selectOpeningCategory('defensive')">防守型开局</li>
+                    </ul>
+                </div>
+                
+                <div class="opening-list">
+                    <h3 id="opening-list-title">流行开局</h3>
+                    <div id="opening-items"></div>
+                </div>
+                
+                <div class="opening-detail">
+                    <h3 id="opening-detail-title">选择一个开局查看详情</h3>
+                    <div id="opening-description"></div>
+                    <div class="opening-board">
+                        <canvas id="opening-board" width="360" height="400"></canvas>
+                    </div>
+                    <div class="opening-controls">
+                        <button id="prev-move" onclick="prevOpeningMove()">上一步</button>
+                        <button id="next-move" onclick="nextOpeningMove()">下一步</button>
+                        <button id="replay-opening" onclick="replayOpening()">重新演示</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 对弈练习 -->
+        <section id="play" class="section">
+            <h2>对弈练习</h2>
+            <div class="play-content">
+                <div class="play-controls">
+                    <h3>游戏设置</h3>
+                    <div class="play-mode">
+                        <label>选择模式：</label>
+                        <select id="play-mode-select">
+                            <option value="pvp">双人对弈</option>
+                            <option value="pvc">人机对弈（简单）</option>
+                        </select>
+                    </div>
+                    
+                    <div class="play-buttons">
+                        <button id="new-game" onclick="newGame()">新游戏</button>
+                        <button id="undo-move" onclick="undoMove()">悔棋</button>
+                        <button id="flip-board" onclick="flipBoard()">翻转棋盘</button>
+                    </div>
+                    
+                    <div class="game-status">
+                        <h4>游戏状态</h4>
+                        <div id="turn-indicator">轮到：红方</div>
+                        <div id="game-status-text">游戏进行中</div>
+                        <div id="move-history">
+                            <h4>走棋记录</h4>
+                            <div id="history-list"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="play-board">
+                    <canvas id="play-board" width="360" height="400"></canvas>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 中国象棋教学网 | 传承千年智慧，享受对弈乐趣</p>
+    </footer>
+
+    <script src="chessboard.js"></script>
+    <script src="tutorial.js"></script>
+    <script src="animation.js"></script>
+    <script src="lessons.js"></script>
+    <script src="openings.js"></script>
+    <script src="game.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

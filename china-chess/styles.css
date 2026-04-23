@@ -1,0 +1,544 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Microsoft YaHei', 'SimHei', Arial, sans-serif;
+    line-height: 1.6;
+    color: #333;
+    background-color: #f5f5f5;
+}
+
+header {
+    background-color: #8B0000;
+    color: #FFD700;
+    padding: 20px 0;
+    text-align: center;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+header h1 {
+    margin-bottom: 15px;
+    font-size: 2.5em;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+}
+
+nav ul {
+    list-style: none;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+nav ul li {
+    margin: 5px 15px;
+}
+
+nav ul li a {
+    color: #FFD700;
+    text-decoration: none;
+    font-weight: bold;
+    padding: 5px 10px;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+
+nav ul li a:hover {
+    background-color: #A52A2A;
+}
+
+main {
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 0 20px;
+}
+
+.section {
+    display: none;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+}
+
+.section.active {
+    display: block;
+}
+
+.section h2 {
+    color: #8B0000;
+    margin-bottom: 20px;
+    font-size: 2em;
+    border-bottom: 2px solid #8B0000;
+    padding-bottom: 10px;
+}
+
+/* 历史典故样式 */
+.history-content {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.history-item {
+    background-color: #f9f9f9;
+    padding: 15px;
+    border-radius: 5px;
+    border-left: 4px solid #8B0000;
+}
+
+.history-item h3 {
+    color: #8B0000;
+    margin-bottom: 10px;
+}
+
+.history-item p {
+    margin-bottom: 10px;
+    text-indent: 2em;
+}
+
+/* 教程样式 */
+.tutorial-content {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+.tutorial-item {
+    background-color: #f9f9f9;
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+}
+
+.tutorial-item h3 {
+    color: #8B0000;
+    margin-bottom: 15px;
+    font-size: 1.5em;
+}
+
+.tutorial-item p {
+    margin-bottom: 10px;
+    text-indent: 2em;
+}
+
+.chessboard-small {
+    margin: 20px auto;
+    text-align: center;
+}
+
+.move-info {
+    background-color: #e0f7fa;
+    padding: 10px;
+    border-radius: 5px;
+    margin-top: 15px;
+    font-weight: bold;
+    color: #00695c;
+}
+
+/* 动画演示样式 */
+.animation-content {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.animation-controls {
+    flex: 1;
+    min-width: 300px;
+    background-color: #f9f9f9;
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+}
+
+.animation-controls h3 {
+    color: #8B0000;
+    margin-bottom: 15px;
+}
+
+.animation-controls select,
+.animation-controls button {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+}
+
+.animation-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.animation-buttons button {
+    flex: 1;
+}
+
+.animation-speed {
+    margin-top: 15px;
+}
+
+.animation-speed label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.animation-speed input {
+    width: 100%;
+}
+
+.animation-board {
+    flex: 1;
+    min-width: 360px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* 分步教学样式 */
+.step-by-step-content {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.lesson-select {
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.lesson-select h3 {
+    color: #8B0000;
+    margin-bottom: 15px;
+}
+
+.lesson-select select {
+    width: 100%;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+}
+
+.lesson-content {
+    flex: 1;
+    min-width: 300px;
+    background-color: #f9f9f9;
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+}
+
+.lesson-steps {
+    margin-bottom: 20px;
+}
+
+.lesson-step {
+    display: none;
+    padding: 15px;
+    background-color: #fff;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+}
+
+.lesson-step.active {
+    display: block;
+}
+
+.lesson-step h3 {
+    color: #8B0000;
+    margin-bottom: 10px;
+}
+
+.lesson-controls {
+    display: flex;
+    gap: 10px;
+}
+
+.lesson-controls button {
+    flex: 1;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+    background-color: #fff;
+    cursor: pointer;
+}
+
+.lesson-controls button:hover {
+    background-color: #f0f0f0;
+}
+
+.lesson-board {
+    flex: 1;
+    min-width: 360px;
+    text-align: center;
+}
+
+/* 开局库样式 */
+.opening-content {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.opening-categories {
+    flex: 1;
+    min-width: 200px;
+}
+
+.opening-categories h3 {
+    color: #8B0000;
+    margin-bottom: 15px;
+}
+
+.opening-categories ul {
+    list-style: none;
+}
+
+.opening-categories li {
+    padding: 10px;
+    background-color: #f9f9f9;
+    margin-bottom: 5px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.opening-categories li:hover,
+.opening-categories li.active {
+    background-color: #8B0000;
+    color: #FFD700;
+}
+
+.opening-list {
+    flex: 2;
+    min-width: 300px;
+}
+
+.opening-list h3 {
+    color: #8B0000;
+    margin-bottom: 15px;
+}
+
+.opening-items {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 10px;
+}
+
+.opening-item {
+    padding: 15px;
+    background-color: #f9f9f9;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    border: 1px solid #ddd;
+}
+
+.opening-item:hover {
+    background-color: #f0f0f0;
+}
+
+.opening-item h4 {
+    color: #8B0000;
+    margin-bottom: 10px;
+}
+
+.opening-detail {
+    flex: 2;
+    min-width: 360px;
+    background-color: #f9f9f9;
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+}
+
+.opening-detail h3 {
+    color: #8B0000;
+    margin-bottom: 15px;
+}
+
+.opening-description {
+    margin-bottom: 20px;
+    text-indent: 2em;
+}
+
+.opening-board {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.opening-controls {
+    display: flex;
+    gap: 10px;
+}
+
+.opening-controls button {
+    flex: 1;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+    background-color: #fff;
+    cursor: pointer;
+}
+
+.opening-controls button:hover {
+    background-color: #f0f0f0;
+}
+
+/* 对弈练习样式 */
+.play-content {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.play-controls {
+    flex: 1;
+    min-width: 300px;
+    background-color: #f9f9f9;
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+}
+
+.play-controls h3,
+.play-controls h4 {
+    color: #8B0000;
+    margin-bottom: 15px;
+}
+
+.play-mode {
+    margin-bottom: 20px;
+}
+
+.play-mode label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.play-mode select {
+    width: 100%;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+}
+
+.play-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.play-buttons button {
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+    background-color: #fff;
+    cursor: pointer;
+}
+
+.play-buttons button:hover {
+    background-color: #f0f0f0;
+}
+
+.game-status {
+    margin-top: 20px;
+}
+
+#turn-indicator,
+#game-status-text {
+    padding: 10px;
+    background-color: #fff;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    border: 1px solid #ddd;
+}
+
+#move-history {
+    margin-top: 20px;
+}
+
+#history-list {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 10px;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.play-board {
+    flex: 1;
+    min-width: 360px;
+    text-align: center;
+}
+
+/* 按钮样式 */
+button {
+    background-color: #8B0000;
+    color: #FFD700;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: #A52A2A;
+}
+
+button:disabled {
+    background-color: #ccc;
+    color: #666;
+    cursor: not-allowed;
+}
+
+/* 棋盘样式 */
+canvas {
+    background-color: #DEB887;
+    border: 2px solid #8B4513;
+    border-radius: 5px;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    header h1 {
+        font-size: 1.8em;
+    }
+    
+    nav ul {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    nav ul li {
+        margin: 10px 0;
+    }
+    
+    .animation-content,
+    .step-by-step-content,
+    .opening-content,
+    .play-content {
+        flex-direction: column;
+    }
+    
+    .animation-buttons,
+    .lesson-controls,
+    .opening-controls {
+        flex-direction: column;
+    }
+}
+
+footer {
+    text-align: center;
+    padding: 20px;
+    background-color: #8B0000;
+    color: #FFD700;
+    margin-top: 30px;
+}
