@@ -1,0 +1,32 @@
+{
+  "shortLinks": [
+    {
+      "id": 2,
+      "shortCode": "Tob--O",
+      "originalUrl": "https://www.github.com",
+      "expiresAt": null,
+      "visitCount": 0,
+      "createdAt": "2026-04-23T13:12:22.942Z",
+      "updatedAt": "2026-04-23T13:12:22.942Z"
+    },
+    {
+      "id": 3,
+      "shortCode": "Jurnko",
+      "originalUrl": "https://www.baidu.com",
+      "expiresAt": null,
+      "visitCount": 1,
+      "createdAt": "2026-04-23T13:19:40.546Z",
+      "updatedAt": "2026-04-23T13:19:46.822Z"
+    },
+    {
+      "id": 4,
+      "shortCode": "my-link",
+      "originalUrl": "https://www.example.com",
+      "expiresAt": "2026-05-23T13:24:15.040Z",
+      "visitCount": 1,
+      "createdAt": "2026-04-23T13:24:15.040Z",
+      "updatedAt": "2026-04-23T13:24:33.162Z"
+    }
+  ],
+  "nextId": 5
+}
