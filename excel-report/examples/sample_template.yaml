@@ -1,0 +1,61 @@
+global:
+  output_name: "sales_report_{{timestamp}}"
+  default_style:
+    font:
+      size: 11
+    border: "thin"
+
+sheets:
+  - name: "月度销售数据"
+    query: "SELECT * FROM monthly_sales"
+    include_headers: true
+    styles:
+      header:
+        bold: true
+        fill_color: "4472C4"
+        font_color: "FFFFFF"
+    merge_cells:
+      - start_row: 1
+        end_row: 1
+        start_col: 1
+        end_col: 5
+        value: "2024年月度销售统计报告"
+        style:
+          bold: true
+          font_size: 14
+          alignment: "center"
+    charts:
+      - type: "bar"
+        title: "月度销售额对比"
+        x_axis: "month"
+        y_axes: ["sales", "profit"]
+        position: "A10"
+        show_data_labels: true
+
+  - name: "产品列表"
+    query: "SELECT id, name, category, price, stock, status FROM products"
+    include_headers: true
+    styles:
+      header:
+        bold: true
+        fill_color: "70AD47"
+        font_color: "FFFFFF"
+
+  - name: "员工信息"
+    query: |
+      SELECT 
+        e.name AS 员工姓名,
+        d.name AS 部门,
+        e.position AS 职位,
+        e.salary AS 薪资,
+        e.join_date AS 入职日期
+      FROM employees e
+      JOIN departments d ON e.department_id = d.id
+    include_headers: true
+    charts:
+      - type: "line"
+        title: "员工薪资分布"
+        x_axis: "员工姓名"
+        y_axes: ["薪资"]
+        position: "A30"
+        show_markers: true
