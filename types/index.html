@@ -3,190 +3,111 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>打字练习</title>
-    <link rel="stylesheet" href="style.css">
+    <title>打字练习应用</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div id="app">
-        <!-- 顶部导航栏 -->
-        <nav id="navbar">
-            <div class="logo">打字练习</div>
-            <div class="nav-buttons">
-                <button id="mode-btn" class="nav-btn">模式</button>
-                <button id="settings-btn" class="nav-btn">设置</button>
-                <button id="history-btn" class="nav-btn">历史</button>
-                <button id="fullscreen-btn" class="nav-btn">全屏</button>
+    <div class="app-container">
+        <header class="app-header">
+            <h1>打字练习</h1>
+            <div class="header-controls">
+                <select id="language-select">
+                    <option value="english">英文练习</option>
+                    <option value="chinese">中文练习</option>
+                </select>
+                <select id="level-select">
+                    <option value="elementary">小学</option>
+                    <option value="middle">初中</option>
+                    <option value="high">高中</option>
+                    <option value="daily">日常短句</option>
+                    <option value="classics">经典名句</option>
+                </select>
+                <button id="sound-toggle-btn" class="btn-primary">🔊 音效: 开</button>
+                <button id="custom-text-btn" class="btn-secondary">导入自定义文本</button>
+                <button id="next-btn" class="btn-primary" style="display: none;">下一篇 (Enter)</button>
             </div>
-        </nav>
+        </header>
 
-        <!-- 中间核心区域 -->
-        <main id="main-content">
-            <!-- 模式选择面板 -->
-            <div id="mode-panel" class="panel">
-                <h2>选择练习模式</h2>
-                <div class="mode-options">
-                    <div class="mode-option" data-mode="keys">
-                        <h3>键位指法练习</h3>
-                        <p>26个英文字母、数字、常用符号</p>
-                    </div>
-                    <div class="mode-option" data-mode="english">
-                        <h3>英文文章练习</h3>
-                        <p>分级英文短文、常用单词</p>
-                    </div>
-                    <div class="mode-option" data-mode="chinese">
-                        <h3>中文文章练习</h3>
-                        <p>经典课文、日常短句、办公文案</p>
-                    </div>
+        <main class="main-content">
+            <div class="stats-bar">
+                <div class="stat-item">
+                    <span class="stat-label">速度</span>
+                    <span class="stat-value" id="wpm">0</span>
+                    <span class="stat-unit">WPM</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">正确率</span>
+                    <span class="stat-value" id="accuracy">100</span>
+                    <span class="stat-unit">%</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">时间</span>
+                    <span class="stat-value" id="time">00:00</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">错误</span>
+                    <span class="stat-value" id="errors">0</span>
                 </div>
             </div>
 
-            <!-- 练习区域 -->
-            <div id="practice-area" class="hidden">
-                <div id="text-display">
-                    <div id="target-text"></div>
-                    <div id="input-text" class="hidden"></div>
-                </div>
-                <div id="progress-bar">
-                    <div id="progress-fill"></div>
-                </div>
-                <div id="cursor" class="hidden"></div>
+            <div class="text-display" id="text-display">
+                <p id="sample-text">准备开始练习...</p>
             </div>
 
-            <!-- 欢迎/开始界面 -->
-            <div id="welcome-screen">
-                <h1>准备好开始打字练习了吗？</h1>
-                <p>选择一个模式，然后开始输入第一个字符开始计时</p>
-                <button id="start-practice-btn" class="primary-btn">开始练习</button>
+            <div class="input-area">
+                <textarea id="input-field" placeholder="在此输入..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></textarea>
+                <div class="input-feedback" id="input-feedback"></div>
             </div>
         </main>
 
-        <!-- 底部统计栏 -->
-        <footer id="stats-bar" class="hidden">
-            <div class="stat-item">
-                <span class="stat-label">速度</span>
-                <span id="speed-stat" class="stat-value">0 WPM</span>
-            </div>
-            <div class="stat-item">
-                <span class="stat-label">准确率</span>
-                <span id="accuracy-stat" class="stat-value">100%</span>
-            </div>
-            <div class="stat-item">
-                <span class="stat-label">用时</span>
-                <span id="time-stat" class="stat-value">00:00</span>
-            </div>
-            <div class="stat-item">
-                <span class="stat-label">进度</span>
-                <span id="progress-stat" class="stat-value">0/0</span>
-            </div>
-        </footer>
-
-        <!-- 设置弹窗 -->
-        <div id="settings-modal" class="modal hidden">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h2>设置</h2>
-                    <button class="close-btn">&times;</button>
-                </div>
-                <div class="modal-body">
-                    <div class="setting-item">
-                        <label for="strict-mode">严格模式</label>
-                        <input type="checkbox" id="strict-mode" checked>
-                        <p class="setting-desc">错误字符必须删除修正后才能继续</p>
+        <div class="result-modal" id="result-modal" style="display: none;">
+            <div class="result-content">
+                <h2>练习完成！</h2>
+                <div class="result-stats">
+                    <div class="result-item">
+                        <span class="result-label">打字速度</span>
+                        <span class="result-value" id="result-wpm">0</span>
+                        <span class="result-unit">WPM</span>
                     </div>
-                    <div class="setting-item">
-                        <label for="dark-mode">深色模式</label>
-                        <input type="checkbox" id="dark-mode">
+                    <div class="result-item">
+                        <span class="result-label">正确率</span>
+                        <span class="result-value" id="result-accuracy">0</span>
+                        <span class="result-unit">%</span>
                     </div>
-                    <div class="setting-item">
-                        <label for="finger-hints">指法提示</label>
-                        <input type="checkbox" id="finger-hints" checked>
+                    <div class="result-item">
+                        <span class="result-label">用时</span>
+                        <span class="result-value" id="result-time">00:00</span>
                     </div>
-                    <div class="setting-item">
-                        <label for="sound-effects">打字音效</label>
-                        <input type="checkbox" id="sound-effects">
-                    </div>
-                    <div class="setting-item">
-                        <label for="font-size">字体大小</label>
-                        <select id="font-size">
-                            <option value="small">小</option>
-                            <option value="medium" selected>中</option>
-                            <option value="large">大</option>
-                        </select>
+                    <div class="result-item">
+                        <span class="result-label">错误次数</span>
+                        <span class="result-value" id="result-errors">0</span>
                     </div>
                 </div>
+                <div class="result-actions">
+                    <button id="retry-btn" class="btn-secondary">重新练习</button>
+                    <button id="next-result-btn" class="btn-primary">下一篇 (Enter)</button>
+                </div>
+                <p class="hint">提示：按 Enter 键快速开始下一篇</p>
             </div>
         </div>
 
-        <!-- 历史成绩弹窗 -->
-        <div id="history-modal" class="modal hidden">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h2>历史成绩</h2>
-                    <button class="close-btn">&times;</button>
-                </div>
-                <div class="modal-body">
-                    <div id="history-list"></div>
-                    <div class="history-actions">
-                        <button id="export-history-btn" class="secondary-btn">导出数据</button>
-                        <button id="clear-history-btn" class="danger-btn">清空记录</button>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <div class="custom-modal" id="custom-modal" style="display: none;">
+            <div class="custom-content">
+                <h2>导入自定义文本</h2>
+                <p class="hint">请按以下格式输入文本（每行一段，空行分隔不同练习段落）：</p>
+                <textarea id="custom-text-input" placeholder="第一段练习文本...
 
-        <!-- 成绩报告弹窗 -->
-        <div id="results-modal" class="modal hidden">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h2>练习完成！</h2>
-                    <button class="close-btn">&times;</button>
-                </div>
-                <div class="modal-body">
-                    <div id="result-grade" class="grade-display"></div>
-                    <div class="result-stats">
-                        <div class="result-stat">
-                            <span class="result-label">WPM</span>
-                            <span id="result-wpm" class="result-value">0</span>
-                        </div>
-                        <div class="result-stat">
-                            <span class="result-label">CPM</span>
-                            <span id="result-cpm" class="result-value">0</span>
-                        </div>
-                        <div class="result-stat">
-                            <span class="result-label">准确率</span>
-                            <span id="result-accuracy" class="result-value">100%</span>
-                        </div>
-                        <div class="result-stat">
-                            <span class="result-label">用时</span>
-                            <span id="result-time" class="result-value">00:00</span>
-                        </div>
-                    </div>
-                    <div id="errors-list" class="hidden">
-                        <h3>错误统计</h3>
-                        <div id="errors-content"></div>
-                    </div>
-                    <div class="result-actions">
-                        <button id="retry-btn" class="primary-btn">重新练习</button>
-                        <button id="change-text-btn" class="secondary-btn">换一篇</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- 键盘指法提示弹窗 -->
-        <div id="keyboard-modal" class="modal hidden">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h2>键盘指法</h2>
-                    <button class="close-btn">&times;</button>
-                </div>
-                <div class="modal-body">
-                    <div id="keyboard-display"></div>
+第二段练习文本..."></textarea>
+                <div class="custom-actions">
+                    <button id="cancel-custom-btn" class="btn-secondary">取消</button>
+                    <button id="confirm-custom-btn" class="btn-primary">确认导入</button>
                 </div>
             </div>
         </div>
     </div>
 
+    <script src="data/texts.js"></script>
+    <script src="utils/audio.js"></script>
     <script src="app.js"></script>
 </body>
 </html>
