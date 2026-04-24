@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(py --version)",
+      "Bash(py -m pip install -r requirements.txt)",
+      "Bash(py -m pip install jieba scikit-learn flask pandas numpy joblib)",
+      "Bash(py *)"
+    ]
+  }
+}
