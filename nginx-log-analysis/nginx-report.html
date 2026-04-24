@@ -1,0 +1,901 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nginx 日志分析报告</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        .header {
+            text-align: center;
+            color: white;
+            padding: 40px 0;
+        }
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        .header .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+        .card-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 3px solid #667eea;
+            color: #2d3748;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+        .stat-card {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+        .stat-card.pv { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
+        .stat-card.uv { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; }
+        .stat-card.success { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white; }
+        .stat-card.error { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); color: white; }
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        th, td {
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        th {
+            background: #f7fafc;
+            font-weight: 600;
+            color: #4a5568;
+        }
+        tr:hover {
+            background: #f7fafc;
+        }
+        .progress-bar {
+            height: 8px;
+            background: #e2e8f0;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+        .progress-fill.green { background: linear-gradient(90deg, #4facfe, #00f2fe); }
+        .progress-fill.blue { background: linear-gradient(90deg, #667eea, #764ba2); }
+        .progress-fill.red { background: linear-gradient(90deg, #f093fb, #f5576c); }
+        .progress-fill.yellow { background: linear-gradient(90deg, #fa709a, #fee140); }
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        .badge-2xx { background: #c6f6d5; color: #22543d; }
+        .badge-3xx { background: #bee3f8; color: #2a4365; }
+        .badge-4xx { background: #feebc8; color: #744210; }
+        .badge-5xx { background: #fed7d7; color: #742a2a; }
+        .warning-box {
+            background: linear-gradient(135deg, #fff3cd 0%, #ffecd2 100%);
+            border-left: 4px solid #ffc107;
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .warning-box h4 {
+            color: #856404;
+            margin-bottom: 8px;
+        }
+        .warning-box p {
+            color: #856404;
+            font-size: 0.9rem;
+        }
+        .info-box {
+            background: linear-gradient(135deg, #d1ecf1 0%, #b8daff 100%);
+            border-left: 4px solid #0c5460;
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .info-box h4 {
+            color: #0c5460;
+            margin-bottom: 8px;
+        }
+        .info-box p {
+            color: #0c5460;
+            font-size: 0.9rem;
+        }
+        .two-columns {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+        @media (max-width: 768px) {
+            .two-columns {
+                grid-template-columns: 1fr;
+            }
+            .header h1 {
+                font-size: 1.8rem;
+            }
+        }
+        .chart-container {
+            height: 300px;
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-around;
+            padding: 20px;
+            background: #f7fafc;
+            border-radius: 12px;
+        }
+        .chart-bar {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 60px;
+        }
+        .chart-bar .bar {
+            width: 40px;
+            background: linear-gradient(180deg, #667eea, #764ba2);
+            border-radius: 4px 4px 0 0;
+            transition: height 0.5s ease;
+        }
+        .chart-bar .label {
+            margin-top: 8px;
+            font-size: 0.75rem;
+            color: #4a5568;
+            text-align: center;
+            word-wrap: break-word;
+            max-width: 60px;
+        }
+        .chart-bar .value {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 4px;
+        }
+        .footer {
+            text-align: center;
+            color: white;
+            padding: 20px;
+            opacity: 0.8;
+            font-size: 0.9rem;
+        }
+        .code {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+        .scrollable {
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Nginx 日志分析报告</h1>
+            <div class="subtitle">生成时间: 2026-04-24 10:25:35</div>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">基本统计</h2>
+            <div class="info-box">
+                <h4>时间范围</h4>
+                <p>2026-04-24 08:00:00 至 2026-04-24 08:00:30</p>
+            </div>
+            <div class="stats-grid">
+                <div class="stat-card pv">
+                    <div class="stat-value">31</div>
+                    <div class="stat-label">总请求数 (PV)</div>
+                </div>
+                <div class="stat-card uv">
+                    <div class="stat-value">16</div>
+                    <div class="stat-label">独立 IP 数 (UV)</div>
+                </div>
+                <div class="stat-card success">
+                    <div class="stat-value">25</div>
+                    <div class="stat-label">成功请求 (2xx)</div>
+                </div>
+                <div class="stat-card error">
+                    <div class="stat-value">4</div>
+                    <div class="stat-label">错误请求 (4xx+5xx)</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">0.16 MB</div>
+                    <div class="stat-label">总流量</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">1132.74 ms</div>
+                    <div class="stat-label">平均响应时间</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="two-columns">
+            <div class="card">
+                <h2 class="card-title">状态码分布</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>状态码</th>
+                            <th>数量</th>
+                            <th>占比</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        
+                        <tr>
+                            <td>
+                                <span class="badge badge-2xx">200</span>
+                            </td>
+                            <td>23</td>
+                            <td>74.19%</td>
+                            <td style="width: 200px;">
+                                <div class="progress-bar">
+                                    <div class="progress-fill green" 
+                                         style="width: 74.19354838709677%"></div>
+                                </div>
+                            </td>
+                        </tr>
+                        
+                        <tr>
+                            <td>
+                                <span class="badge badge-2xx">201</span>
+                            </td>
+                            <td>1</td>
+                            <td>3.23%</td>
+                            <td style="width: 200px;">
+                                <div class="progress-bar">
+                                    <div class="progress-fill green" 
+                                         style="width: 3.225806451612903%"></div>
+                                </div>
+                            </td>
+                        </tr>
+                        
+                        <tr>
+                            <td>
+                                <span class="badge badge-2xx">204</span>
+                            </td>
+                            <td>1</td>
+                            <td>3.23%</td>
+                            <td style="width: 200px;">
+                                <div class="progress-bar">
+                                    <div class="progress-fill green" 
+                                         style="width: 3.225806451612903%"></div>
+                                </div>
+                            </td>
+                        </tr>
+                        
+                        <tr>
+                            <td>
+                                <span class="badge badge-3xx">302</span>
+                            </td>
+                            <td>1</td>
+                            <td>3.23%</td>
+                            <td style="width: 200px;">
+                                <div class="progress-bar">
+                                    <div class="progress-fill blue" 
+                                         style="width: 3.225806451612903%"></div>
+                                </div>
+                            </td>
+                        </tr>
+                        
+                        <tr>
+                            <td>
+                                <span class="badge badge-3xx">304</span>
+                            </td>
+                            <td>1</td>
+                            <td>3.23%</td>
+                            <td style="width: 200px;">
+                                <div class="progress-bar">
+                                    <div class="progress-fill blue" 
+                                         style="width: 3.225806451612903%"></div>
+                                </div>
+                            </td>
+                        </tr>
+                        
+                        <tr>
+                            <td>
+                                <span class="badge badge-4xx">401</span>
+                            </td>
+                            <td>1</td>
+                            <td>3.23%</td>
+                            <td style="width: 200px;">
+                                <div class="progress-bar">
+                                    <div class="progress-fill red" 
+                                         style="width: 3.225806451612903%"></div>
+                                </div>
+                            </td>
+                        </tr>
+                        
+                        <tr>
+                            <td>
+                                <span class="badge badge-4xx">403</span>
+                            </td>
+                            <td>1</td>
+                            <td>3.23%</td>
+                            <td style="width: 200px;">
+                                <div class="progress-bar">
+                                    <div class="progress-fill red" 
+                                         style="width: 3.225806451612903%"></div>
+                                </div>
+                            </td>
+                        </tr>
+                        
+                        <tr>
+                            <td>
+                                <span class="badge badge-4xx">404</span>
+                            </td>
+                            <td>1</td>
+                            <td>3.23%</td>
+                            <td style="width: 200px;">
+                                <div class="progress-bar">
+                                    <div class="progress-fill red" 
+                                         style="width: 3.225806451612903%"></div>
+                                </div>
+                            </td>
+                        </tr>
+                        
+                        <tr>
+                            <td>
+                                <span class="badge badge-5xx">500</span>
+                            </td>
+                            <td>1</td>
+                            <td>3.23%</td>
+                            <td style="width: 200px;">
+                                <div class="progress-bar">
+                                    <div class="progress-fill red" 
+                                         style="width: 3.225806451612903%"></div>
+                                </div>
+                            </td>
+                        </tr>
+                        
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="card">
+                <h2 class="card-title">响应时间分布</h2>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>范围</th>
+                            <th>数量</th>
+                            <th>占比</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        
+                        <tr>
+                            <td>0-100ms</td>
+                            <td>16</td>
+                            <td>51.61%</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>100-300ms</td>
+                            <td>6</td>
+                            <td>19.35%</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>300-500ms</td>
+                            <td>3</td>
+                            <td>9.68%</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>500ms-1s</td>
+                            <td>0</td>
+                            <td>0.00%</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>1s-2s</td>
+                            <td>2</td>
+                            <td>6.45%</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>2s-5s</td>
+                            <td>2</td>
+                            <td>6.45%</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>5s+</td>
+                            <td>2</td>
+                            <td>6.45%</td>
+                        </tr>
+                        
+                    </tbody>
+                </table>
+                <div style="margin-top: 20px; padding: 16px; background: #f7fafc; border-radius: 8px;">
+                    <h4 style="margin-bottom: 12px; color: #2d3748;">响应时间统计</h4>
+                    <div class="stats-grid" style="gap: 12px;">
+                        <div>
+                            <strong>P50 (中位数):</strong> 90.00 ms
+                        </div>
+                        <div>
+                            <strong>P95:</strong> 5850.00 ms
+                        </div>
+                        <div>
+                            <strong>P99:</strong> 13260.00 ms
+                        </div>
+                        <div>
+                            <strong>P999:</strong> 15096.00 ms
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+
+        
+        <div class="card">
+            <h2 class="card-title">慢请求分析 (P95 阈值: 5850.00 ms)</h2>
+            <div class="warning-box">
+                <h4>发现 2 个慢请求</h4>
+                <p>以下是响应时间超过 P95 的请求，建议关注性能优化。</p>
+            </div>
+            <div class="scrollable">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>响应时间 (ms)</th>
+                            <th>状态码</th>
+                            <th>方法</th>
+                            <th>路径</th>
+                            <th>IP</th>
+                            <th>时间</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        
+                        <tr>
+                            <td><strong style="color: #e53e3e;">15300.00</strong></td>
+                            <td><span class="badge badge-2xx">200</span></td>
+                            <td>GET</td>
+                            <td class="code">/api/extremely-slow</td>
+                            <td>192.168.1.100</td>
+                            <td>2026-04-24 08:00:30+08:00</td>
+                        </tr>
+                        
+                        <tr>
+                            <td><strong style="color: #e53e3e;">8500.00</strong></td>
+                            <td><span class="badge badge-2xx">200</span></td>
+                            <td>GET</td>
+                            <td class="code">/api/very-slow-endpoint</td>
+                            <td>192.168.1.100</td>
+                            <td>2026-04-24 08:00:20+08:00</td>
+                        </tr>
+                        
+                    </tbody>
+                </table>
+            </div>
+            
+        </div>
+        
+
+        
+        <div class="card">
+            <h2 class="card-title">异常 IP 分析</h2>
+            <div class="warning-box">
+                <h4>发现 1 个异常访问 IP</h4>
+                <p>平均每个 IP 请求数: 1.94，阈值: 9.55</p>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>IP 地址</th>
+                        <th>请求数</th>
+                        <th>占比</th>
+                        <th>超过平均倍数</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    
+                    <tr>
+                        <td><strong>10.0.0.1</strong></td>
+                        <td>10</td>
+                        <td>32.26%</td>
+                        <td>5.16x</td>
+                        <td style="width: 200px;">
+                            <div class="progress-bar">
+                                <div class="progress-fill red" style="width: 100%"></div>
+                            </div>
+                        </td>
+                    </tr>
+                    
+                </tbody>
+            </table>
+            
+        </div>
+        
+
+        <div class="two-columns">
+            <div class="card">
+                <h2 class="card-title">热门路径 TOP 20</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>排名</th>
+                            <th>路径</th>
+                            <th>请求数</th>
+                            <th>占比</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        
+                        <tr>
+                            <td>1</td>
+                            <td class="code">/index.html</td>
+                            <td>1</td>
+                            <td>3.23%</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>2</td>
+                            <td class="code">/api/users</td>
+                            <td>1</td>
+                            <td>3.23%</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>3</td>
+                            <td class="code">/api/login</td>
+                            <td>1</td>
+                            <td>3.23%</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>4</td>
+                            <td class="code">/css/style.css</td>
+                            <td>1</td>
+                            <td>3.23%</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>5</td>
+                            <td class="code">/api/products?page=1</td>
+                            <td>1</td>
+                            <td>3.23%</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>6</td>
+                            <td class="code">/api/orders</td>
+                            <td>1</td>
+                            <td>3.23%</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>7</td>
+                            <td class="code">/not-found</td>
+                            <td>1</td>
+                            <td>3.23%</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>8</td>
+                            <td class="code">/api/error</td>
+                            <td>1</td>
+                            <td>3.23%</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>9</td>
+                            <td class="code">/api/reports</td>
+                            <td>1</td>
+                            <td>3.23%</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>10</td>
+                            <td class="code">/api/data</td>
+                            <td>1</td>
+                            <td>3.23%</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>11</td>
+                            <td class="code">/api/test1</td>
+                            <td>1</td>
+                            <td>3.23%</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>12</td>
+                            <td class="code">/api/test2</td>
+                            <td>1</td>
+                            <td>3.23%</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>13</td>
+                            <td class="code">/api/test3</td>
+                            <td>1</td>
+                            <td>3.23%</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>14</td>
+                            <td class="code">/api/test4</td>
+                            <td>1</td>
+                            <td>3.23%</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>15</td>
+                            <td class="code">/api/test5</td>
+                            <td>1</td>
+                            <td>3.23%</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>16</td>
+                            <td class="code">/api/test6</td>
+                            <td>1</td>
+                            <td>3.23%</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>17</td>
+                            <td class="code">/api/test7</td>
+                            <td>1</td>
+                            <td>3.23%</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>18</td>
+                            <td class="code">/api/test8</td>
+                            <td>1</td>
+                            <td>3.23%</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>19</td>
+                            <td class="code">/api/test9</td>
+                            <td>1</td>
+                            <td>3.23%</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>20</td>
+                            <td class="code">/api/test10</td>
+                            <td>1</td>
+                            <td>3.23%</td>
+                        </tr>
+                        
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="card">
+                <h2 class="card-title">请求方法分布</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>方法</th>
+                            <th>数量</th>
+                            <th>占比</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        
+                        <tr>
+                            <td><strong>GET</strong></td>
+                            <td>27</td>
+                            <td>87.10%</td>
+                        </tr>
+                        
+                        <tr>
+                            <td><strong>POST</strong></td>
+                            <td>2</td>
+                            <td>6.45%</td>
+                        </tr>
+                        
+                        <tr>
+                            <td><strong>PUT</strong></td>
+                            <td>1</td>
+                            <td>3.23%</td>
+                        </tr>
+                        
+                        <tr>
+                            <td><strong>DELETE</strong></td>
+                            <td>1</td>
+                            <td>3.23%</td>
+                        </tr>
+                        
+                    </tbody>
+                </table>
+
+                
+                <h3 style="margin-top: 24px; margin-bottom: 16px; color: #2d3748;">热门来源页 TOP 10</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>来源页</th>
+                            <th>数量</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        
+                        <tr>
+                            <td class="code">https://www.example.com/</td>
+                            <td>9</td>
+                        </tr>
+                        
+                        <tr>
+                            <td class="code">https://www.example.com/profile</td>
+                            <td>2</td>
+                        </tr>
+                        
+                        <tr>
+                            <td class="code">https://www.example.com/dashboard</td>
+                            <td>2</td>
+                        </tr>
+                        
+                        <tr>
+                            <td class="code">https://www.example.com/login</td>
+                            <td>1</td>
+                        </tr>
+                        
+                        <tr>
+                            <td class="code">https://www.example.com/reports</td>
+                            <td>1</td>
+                        </tr>
+                        
+                        <tr>
+                            <td class="code">https://www.example.com/form</td>
+                            <td>1</td>
+                        </tr>
+                        
+                        <tr>
+                            <td class="code">https://www.example.com/old-page</td>
+                            <td>1</td>
+                        </tr>
+                        
+                        <tr>
+                            <td class="code">https://www.example.com/admin</td>
+                            <td>1</td>
+                        </tr>
+                        
+                    </tbody>
+                </table>
+                
+            </div>
+        </div>
+
+        
+        <div class="card">
+            <h2 class="card-title">用户代理 TOP 20</h2>
+            <div class="scrollable">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>排名</th>
+                            <th>用户代理</th>
+                            <th>数量</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        
+                        <tr>
+                            <td>1</td>
+                            <td>Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36</td>
+                            <td>13</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>2</td>
+                            <td>Bot/1.0</td>
+                            <td>10</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>3</td>
+                            <td>Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15</td>
+                            <td>2</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>4</td>
+                            <td>Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15</td>
+                            <td>1</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>5</td>
+                            <td>PostmanRuntime/7.29.0</td>
+                            <td>1</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>6</td>
+                            <td>Mozilla/5.0 (Android 11; Mobile; rv:68.0) Gecko/68.0 Firefox/88.0</td>
+                            <td>1</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>7</td>
+                            <td>curl/7.68.0</td>
+                            <td>1</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>8</td>
+                            <td>Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36</td>
+                            <td>1</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>9</td>
+                            <td>Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:88.0) Gecko/20100101 Firefox/88.0</td>
+                            <td>1</td>
+                        </tr>
+                        
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+
+        <div class="footer">
+            Nginx Log Analyzer | 报告生成于 2026-04-24 10:25:35
+        </div>
+    </div>
+</body>
+</html>

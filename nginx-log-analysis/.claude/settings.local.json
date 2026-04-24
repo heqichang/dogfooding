@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python main.py -f test-access.log --no-report)",
+      "Bash(python *)"
+    ]
+  }
+}
