@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>实时聊天系统</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div id="app">
+    <div id="login-page" class="page">
+      <div class="login-container">
+        <h1>实时聊天系统</h1>
+        <form id="login-form">
+          <div class="form-group">
+            <label for="username">用户名</label>
+            <input type="text" id="username" placeholder="请输入用户名" required autocomplete="off">
+          </div>
+          <button type="submit">进入聊天</button>
+        </form>
+      </div>
+    </div>
+
+    <div id="chat-page" class="page hidden">
+      <div class="sidebar">
+        <div class="user-info">
+          <span id="current-user"></span>
+          <button id="logout-btn" title="退出登录">×</button>
+        </div>
+        
+        <div class="tabs">
+          <button class="tab-btn active" data-tab="rooms">群聊</button>
+          <button class="tab-btn" data-tab="private">私聊</button>
+          <button class="tab-btn" data-tab="users">用户</button>
+        </div>
+
+        <div id="rooms-tab" class="tab-content">
+          <div class="room-list-header">
+            <h3>我的群聊</h3>
+            <button id="create-room-btn" class="btn-small">创建房间</button>
+          </div>
+          <div id="room-list" class="room-list"></div>
+          
+          <div class="room-list-header">
+            <h3>公开房间</h3>
+            <button id="refresh-public-rooms-btn" class="btn-small">刷新</button>
+          </div>
+          <div id="public-rooms-list" class="room-list"></div>
+        </div>
+
+        <div id="private-tab" class="tab-content hidden">
+          <div class="room-list-header">
+            <h3>私聊</h3>
+          </div>
+          <div id="private-list" class="room-list"></div>
+        </div>
+
+        <div id="users-tab" class="tab-content hidden">
+          <div class="room-list-header">
+            <h3>在线用户</h3>
+          </div>
+          <div id="users-list" class="room-list"></div>
+        </div>
+      </div>
+
+      <div class="main-content">
+        <div id="no-room-selected" class="empty-state">
+          <h2>选择一个房间开始聊天</h2>
+          <p>或者创建一个新房间</p>
+        </div>
+
+        <div id="chat-room" class="hidden">
+          <div class="chat-header">
+            <h3 id="room-name"></h3>
+            <div class="room-members">
+              <span id="members-count"></span>
+              <button id="view-members-btn" class="btn-small">查看成员</button>
+            </div>
+          </div>
+
+          <div id="messages-container" class="messages-container">
+            <div id="load-more-btn" class="load-more hidden">
+              <button>加载更多消息</button>
+            </div>
+            <div id="messages-list" class="messages-list"></div>
+            <div id="typing-indicator" class="typing-indicator hidden"></div>
+          </div>
+
+          <div class="message-input-container">
+            <div class="input-wrapper">
+              <input 
+                type="text" 
+                id="message-input" 
+                placeholder="输入消息..." 
+                autocomplete="off"
+              >
+            </div>
+            <button id="send-btn">发送</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="create-room-modal" class="modal hidden">
+    <div class="modal-content">
+      <h3>创建新房间</h3>
+      <form id="create-room-form">
+        <div class="form-group">
+          <label for="room-name-input">房间名称</label>
+          <input type="text" id="room-name-input" placeholder="请输入房间名称" required>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn-secondary" id="cancel-create-room">取消</button>
+          <button type="submit" class="btn-primary">创建</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div id="members-modal" class="modal hidden">
+    <div class="modal-content">
+      <h3>房间成员</h3>
+      <div id="members-list" class="members-list"></div>
+      
+      <div class="invite-section">
+        <h4>邀请用户</h4>
+        <div id="invite-users-list" class="members-list"></div>
+      </div>
+      
+      <div class="modal-actions">
+        <button type="button" class="btn-secondary" id="close-members-btn">关闭</button>
+      </div>
+    </div>
+  </div>
+  
+  <div id="invitation-modal" class="modal hidden">
+    <div class="modal-content">
+      <h3>收到邀请</h3>
+      <div id="invitation-message"></div>
+      <div class="modal-actions">
+        <button type="button" class="btn-secondary" id="decline-invitation">拒绝</button>
+        <button type="button" class="btn-primary" id="accept-invitation">加入</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="api.js"></script>
+  <script src="websocket.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
