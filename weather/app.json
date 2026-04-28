@@ -1,0 +1,44 @@
+{
+  "expo": {
+    "name": "weather-app",
+    "slug": "weather-app",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/images/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#87CEEB"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.weatherapp",
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "Allow this app to use your location to show you accurate weather information."
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "backgroundColor": "#87CEEB"
+      },
+      "package": "com.weatherapp",
+      "permissions": ["ACCESS_FINE_LOCATION", "ACCESS_COARSE_LOCATION"]
+    },
+    "web": {
+      "favicon": "./assets/favicon-light-48x48.png"
+    },
+    "plugins": [
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Allow $(PRODUCT_NAME) to use your location."
+        }
+      ]
+    ],
+    "extra": {
+      "weatherApiKey": ""
+    }
+  }
+}
