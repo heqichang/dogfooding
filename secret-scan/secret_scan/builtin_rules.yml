@@ -1,0 +1,469 @@
+rules:
+  - id: aws-access-key-id
+    name: "AWS Access Key ID"
+    pattern: "(?<![A-Z0-9])A[SK]IA[A-Z0-9]{16}(?![A-Z0-9])"
+    severity: "high"
+    description: "AWS Access Key ID format"
+    tags: ["aws", "credentials", "api-key"]
+
+  - id: aws-secret-access-key
+    name: "AWS Secret Access Key"
+    pattern: "(?i)(?:aws)?_?(?:secret)_?(?:access)?_?(?:key)?\\s*[:=]\\s*['\"]?[a-zA-Z0-9+\/]{40}(?:['\"]|(?=[\s\r\n,}]|$))"
+    severity: "critical"
+    description: "AWS Secret Access Key pattern"
+    tags: ["aws", "credentials", "secret"]
+
+  - id: github-pat-classic
+    name: "GitHub Personal Access Token (Classic)"
+    pattern: "(?<![A-Za-z0-9])gh[pors]_[A-Za-z0-9]{36,251}(?![A-Za-z0-9])"
+    severity: "critical"
+    description: "GitHub Personal Access Token (classic format: ghp_, gho_, ghu_, ghs_, ghr_)"
+    tags: ["github", "token", "credentials"]
+
+  - id: github-fine-grained-pat
+    name: "GitHub Fine-grained Personal Access Token"
+    pattern: "(?<![A-Za-z0-9])github_pat_[A-Za-z0-9_]{82,}(?![A-Za-z0-9])"
+    severity: "critical"
+    description: "GitHub Fine-grained Personal Access Token"
+    tags: ["github", "token", "credentials"]
+
+  - id: gitlab-access-token
+    name: "GitLab Access Token"
+    pattern: "(?<![A-Za-z0-9])(?:glpat-|glrt-)[A-Za-z0-9_-]{20,}(?![A-Za-z0-9])"
+    severity: "critical"
+    description: "GitLab Access Token (glpat- for personal, glrt- for runner)"
+    tags: ["gitlab", "token", "credentials"]
+
+  - id: slack-api-token
+    name: "Slack API Token"
+    pattern: "(?<![A-Za-z0-9])(?:xox[baprs]-)[a-zA-Z0-9_-]+(?![A-Za-z0-9])"
+    severity: "critical"
+    description: "Slack API token (xoxb- bot, xoxp- user, xoxa- app, xoxr- refresh)"
+    tags: ["slack", "token", "credentials"]
+
+  - id: stripe-api-key
+    name: "Stripe API Key"
+    pattern: "(?<![A-Za-z0-9])(?:sk|pk)_(?:test|live)_[a-zA-Z0-9]{24,}(?![A-Za-z0-9])"
+    severity: "critical"
+    description: "Stripe API key (sk_ secret, pk_ publishable)"
+    tags: ["stripe", "payment", "credentials"]
+
+  - id: private-key-header
+    name: "Private Key File Header"
+    pattern: "-----BEGIN (?:RSA |DSA |EC |OPENSSH |PGP |ENCRYPTED )?PRIVATE KEY-----"
+    severity: "critical"
+    description: "Private key file header"
+    tags: ["crypto", "private-key", "credentials"]
+
+  - id: generic-api-key
+    name: "Generic API Key"
+    pattern: "(?i)(?:api[_-]?key|apikey|secret[_-]?key|secretkey|access[_-]?token|accesstoken|auth[_-]?token|authtoken)\\s*[:=]\\s*['\"]?[A-Za-z0-9]{16,}['\"]?"
+    severity: "medium"
+    description: "Generic API key pattern with variable name indication"
+    tags: ["api-key", "generic"]
+
+  - id: password-in-code
+    name: "Password Literal in Code"
+    pattern: "(?i)(?:password|passwd|pwd)\\s*[:=]\\s*['\"]\\S{4,}['\"]"
+    severity: "medium"
+    description: "Password literal assigned in code"
+    tags: ["password", "hardcoded"]
+
+  - id: connection-string
+    name: "Database Connection String"
+    pattern: "(?i)(?:mongodb://|mysql://|postgresql://|postgres://|redis://|jdbc:|oracle:|sqlserver://)[^\\s\"'>]+"
+    severity: "high"
+    description: "Database connection string with credentials"
+    tags: ["database", "connection-string", "credentials"]
+
+  - id: bearer-token
+    name: "Bearer Token"
+    pattern: "(?i)bearer\\s+[A-Za-z0-9._-]{20,}"
+    severity: "medium"
+    description: "Bearer token in Authorization header format"
+    tags: ["token", "authorization"]
+
+  - id: basic-auth-credentials
+    name: "Basic Auth Credentials in URL"
+    pattern: "(?i)(?:https?://)[^:\\s/]+:[^@\\s/]+@"
+    severity: "high"
+    description: "Basic authentication credentials embedded in URL"
+    tags: ["basic-auth", "url", "credentials"]
+
+  - id: sendgrid-api-key
+    name: "SendGrid API Key"
+    pattern: "(?<![A-Za-z0-9])SG\\.[A-Za-z0-9_-]{22,66}(?![A-Za-z0-9])"
+    severity: "critical"
+    description: "SendGrid API Key"
+    tags: ["sendgrid", "email", "credentials"]
+
+  - id: twilio-api-key
+    name: "Twilio API Credentials"
+    pattern: "(?<![A-Za-z0-9])SK[0-9a-fA-F]{32}(?![0-9a-fA-F])"
+    severity: "high"
+    description: "Twilio API Key (SK prefix)"
+    tags: ["twilio", "sms", "credentials"]
+
+  - id: twilio-account-sid
+    name: "Twilio Account SID"
+    pattern: "(?<![A-Za-z0-9])AC[0-9a-fA-F]{32}(?![0-9a-fA-F])"
+    severity: "medium"
+    description: "Twilio Account SID (AC prefix) - not secret but often paired with auth token"
+    tags: ["twilio", "account"]
+
+  - id: square-access-token
+    name: "Square Access Token"
+    pattern: "(?<![A-Za-z0-9])sq0atp-[A-Za-z0-9_-]{22,}(?![A-Za-z0-9])"
+    severity: "critical"
+    description: "Square Access Token (production)"
+    tags: ["square", "payment", "credentials"]
+
+  - id: paypal-access-token
+    name: "PayPal Access Token"
+    pattern: "(?i)(?:paypal|paypal-rest-sdk).*(?:access_token|secret).*['\"]?[A-Za-z0-9]{20,}['\"]?"
+    severity: "medium"
+    description: "PayPal API credentials pattern"
+    tags: ["paypal", "payment", "credentials"]
+
+  - id: google-oauth-client-secret
+    name: "Google OAuth Client Secret"
+    pattern: "(?i)client_secret\\s*[:=]\\s*['\"]?[A-Za-z0-9_-]{24,}['\"]?"
+    severity: "high"
+    description: "Google OAuth client secret"
+    tags: ["google", "oauth", "credentials"]
+
+  - id: google-api-key
+    name: "Google API Key"
+    pattern: "(?<![A-Za-z0-9])AIza[0-9A-Za-z_-]{35}(?![0-9A-Za-z_-])"
+    severity: "high"
+    description: "Google API Key (AIza prefix)"
+    tags: ["google", "api-key", "credentials"]
+
+  - id: firebase-api-key
+    name: "Firebase API Key"
+    pattern: "(?<![A-Za-z0-9])AAAA[A-Za-z0-9_-]{7}:[A-Za-z0-9_-]{140}(?![A-Za-z0-9_-])"
+    severity: "critical"
+    description: "Firebase Cloud Messaging API Key"
+    tags: ["firebase", "google", "credentials"]
+
+  - id: npm-access-token
+    name: "npm Access Token"
+    pattern: "(?<![A-Za-z0-9])npm_[A-Za-z0-9]{36}(?![A-Za-z0-9])"
+    severity: "high"
+    description: "npm Access Token (npm_ prefix)"
+    tags: ["npm", "package", "credentials"]
+
+  - id: pypi-api-token
+    name: "PyPI API Token"
+    pattern: "(?<![A-Za-z0-9])pypi-[A-Za-z0-9_-]{20,}(?![A-Za-z0-9])"
+    severity: "high"
+    description: "PyPI API Token"
+    tags: ["pypi", "package", "credentials"]
+
+  - id: docker-config-auth
+    name: "Docker Config Auth"
+    pattern: "(?i)\"auth\"\\s*:\\s*\"[A-Za-z0-9+/=]+\""
+    severity: "medium"
+    description: "Docker config.json auth field (base64 encoded credentials)"
+    tags: ["docker", "registry", "credentials"]
+
+  - id: ssh-private-key
+    name: "SSH Private Key"
+    pattern: "-----BEGIN (?:RSA |DSA |EC |ED25519 )?PRIVATE KEY-----"
+    severity: "critical"
+    description: "SSH private key header"
+    tags: ["ssh", "crypto", "private-key"]
+
+  - id: pgp-private-key
+    name: "PGP Private Key Block"
+    pattern: "-----BEGIN PGP PRIVATE KEY BLOCK-----"
+    severity: "critical"
+    description: "PGP private key block header"
+    tags: ["pgp", "crypto", "private-key"]
+
+  - id: aws-credentials-file
+    name: "AWS Credentials File Pattern"
+    pattern: "(?i)(?:aws_access_key_id|aws_secret_access_key)\\s*=\\s*[A-Z0-9/]+"
+    severity: "high"
+    description: "AWS credentials file format"
+    tags: ["aws", "credentials"]
+
+  - id: jwt-token
+    name: "JSON Web Token (JWT)"
+    pattern: "(?<![A-Za-z0-9])eyJ[A-Za-z0-9_-]*\\.eyJ[A-Za-z0-9_-]*\\.[A-Za-z0-9_-]*(?![A-Za-z0-9_-])"
+    severity: "medium"
+    description: "JSON Web Token format (header.payload.signature)"
+    tags: ["jwt", "token", "authorization"]
+
+  - id: adobe-client-id
+    name: "Adobe Client ID"
+    pattern: "(?<![A-Za-z0-9])(?i)adobe.*?(?:client_id|clientid).*?['\"]?[A-Za-z0-9]{32}['\"]?"
+    severity: "medium"
+    description: "Adobe API client ID pattern"
+    tags: ["adobe", "api-key"]
+
+  - id: algolia-api-key
+    name: "Algolia API Key"
+    pattern: "(?i)algolia.*?(?:api_key|apikey).*?['\"]?[a-z0-9]{32}['\"]?"
+    severity: "high"
+    description: "Algolia API key"
+    tags: ["algolia", "search", "credentials"]
+
+  - id: asana-access-token
+    name: "Asana Access Token"
+    pattern: "(?<![A-Za-z0-9])\\d+/[0-9a-f]{16}(?![0-9a-f])"
+    severity: "medium"
+    description: "Asana access token pattern"
+    tags: ["asana", "token"]
+
+  - id: bitbucket-access-token
+    name: "Bitbucket Access Token"
+    pattern: "(?<![A-Za-z0-9])(?:ATBB|BITBUCKET)_[A-Za-z0-9_-]{20,}(?![A-Za-z0-9])"
+    severity: "high"
+    description: "Bitbucket access token"
+    tags: ["bitbucket", "token", "credentials"]
+
+  - id: discord-bot-token
+    name: "Discord Bot Token"
+    pattern: "(?<![A-Za-z0-9])[A-Za-z0-9_-]{24}\\.[A-Za-z0-9_-]{6}\\.[A-Za-z0-9_-]{27,}(?![A-Za-z0-9_-])"
+    severity: "critical"
+    description: "Discord bot token"
+    tags: ["discord", "bot", "credentials"]
+
+  - id: dropbox-api-key
+    name: "Dropbox API Token"
+    pattern: "(?<![A-Za-z0-9])(?:sl\\.[A-Za-z0-9_-]{2,}|db-[A-Za-z0-9_-]{15,})(?![A-Za-z0-9_-])"
+    severity: "high"
+    description: "Dropbox API token (sl. short-lived, db- long-lived)"
+    tags: ["dropbox", "token", "credentials"]
+
+  - id: facebook-access-token
+    name: "Facebook Access Token"
+    pattern: "(?i)EAACEdEose0cBA[0-9A-Za-z]+|EAAC[0-9A-Za-z]{10,}"
+    severity: "critical"
+    description: "Facebook access token"
+    tags: ["facebook", "token", "credentials"]
+
+  - id: facebook-app-secret
+    name: "Facebook App Secret"
+    pattern: "(?i)(?:facebook|fb).*?(?:app_secret|appsecret|secret).*?['\"]?[a-f0-9]{32}['\"]?"
+    severity: "high"
+    description: "Facebook app secret"
+    tags: ["facebook", "credentials"]
+
+  - id: figma-access-token
+    name: "Figma Access Token"
+    pattern: "(?i)figd_[A-Za-z0-9_-]{20,}(?![A-Za-z0-9_-])"
+    severity: "high"
+    description: "Figma access token"
+    tags: ["figma", "token", "credentials"]
+
+  - id: gitlab-ci-job-token
+    name: "GitLab CI Job Token"
+    pattern: "(?i)glcbt-[0-9a-zA-Z_-]{16,}(?![0-9a-zA-Z_-])"
+    severity: "medium"
+    description: "GitLab CI job token"
+    tags: ["gitlab", "ci", "token"]
+
+  - id: heroku-api-key
+    name: "Heroku API Key"
+    pattern: "(?<![A-Za-z0-9])[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}(?![0-9a-fA-F])"
+    severity: "high"
+    description: "Heroku API key (UUID format)"
+    tags: ["heroku", "api-key", "credentials"]
+
+  - id: hubspot-api-key
+    name: "HubSpot API Key"
+    pattern: "(?<![A-Za-z0-9])(?:pat-na1-|hapikey-)[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}(?![0-9a-f])"
+    severity: "high"
+    description: "HubSpot API key"
+    tags: ["hubspot", "api-key", "credentials"]
+
+  - id: intercom-access-token
+    name: "Intercom Access Token"
+    pattern: "(?i)dG9r([A-Za-z0-9_-]{2,})==?(?![A-Za-z0-9_-])"
+    severity: "high"
+    description: "Intercom access token (base64 encoded 'tok' prefix)"
+    tags: ["intercom", "token", "credentials"]
+
+  - id: jira-api-token
+    name: "Jira API Token"
+    pattern: "(?i)(?:jira|atlassian).*?(?:api_token|apitoken|password).*?['\"]?[A-Za-z0-9]{16,}['\"]?"
+    severity: "high"
+    description: "Jira/Atlassian API token pattern"
+    tags: ["jira", "atlassian", "credentials"]
+
+  - id: linkedin-client-secret
+    name: "LinkedIn Client Secret"
+    pattern: "(?i)(?:linkedin).*?(?:client_secret|secret).*?['\"]?[A-Za-z0-9]{16,}['\"]?"
+    severity: "high"
+    description: "LinkedIn client secret"
+    tags: ["linkedin", "credentials"]
+
+  - id: mailchimp-api-key
+    name: "Mailchimp API Key"
+    pattern: "(?<![A-Za-z0-9])[0-9a-f]{32}-us[0-9]{1,2}(?![0-9a-f])"
+    severity: "high"
+    description: "Mailchimp API key (32 char hex + -usN)"
+    tags: ["mailchimp", "email", "credentials"]
+
+  - id: mailgun-api-key
+    name: "Mailgun API Key"
+    pattern: "(?i)(?:mailgun).*?(?:api_key|apikey).*?['\"]?key-[a-f0-9]{32}['\"]?"
+    severity: "high"
+    description: "Mailgun API key"
+    tags: ["mailgun", "email", "credentials"]
+
+  - id: notion-integration-token
+    name: "Notion Integration Token"
+    pattern: "(?<![A-Za-z0-9])secret_[A-Za-z0-9]{43}(?![A-Za-z0-9])"
+    severity: "critical"
+    description: "Notion integration token (secret_ prefix)"
+    tags: ["notion", "token", "credentials"]
+
+  - id: okta-api-token
+    name: "Okta API Token"
+    pattern: "(?<![A-Za-z0-9])(?:00[a-zA-Z0-9_-]{38}|ssws_[a-zA-Z0-9_-]{38})(?![a-zA-Z0-9_-])"
+    severity: "high"
+    description: "Okta API token (00 prefix or ssws_ prefix)"
+    tags: ["okta", "token", "credentials"]
+
+  - id: openai-api-key
+    name: "OpenAI API Key"
+    pattern: "(?<![A-Za-z0-9])(?:sk-[a-zA-Z0-9]{20}T3BlbkFJ[a-zA-Z0-9]{20}|sk-proj-[a-zA-Z0-9_-]{20,})(?![A-Za-z0-9_-])"
+    severity: "critical"
+    description: "OpenAI API key"
+    tags: ["openai", "ai", "credentials"]
+
+  - id: plaid-api-key
+    name: "Plaid API Key"
+    pattern: "(?i)(?:plaid).*?(?:client_id|client_secret).*?['\"]?[A-Za-z0-9]{16,}['\"]?"
+    severity: "high"
+    description: "Plaid API credentials"
+    tags: ["plaid", "fintech", "credentials"]
+
+  - id: postman-api-key
+    name: "Postman API Key"
+    pattern: "(?<![A-Za-z0-9])PMAK-[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}(?![a-f0-9])"
+    severity: "high"
+    description: "Postman API key"
+    tags: ["postman", "api-key", "credentials"]
+
+  - id: pulumi-access-token
+    name: "Pulumi Access Token"
+    pattern: "(?<![A-Za-z0-9])pul-[a-f0-9]{40}(?![a-f0-9])"
+    severity: "high"
+    description: "Pulumi access token"
+    tags: ["pulumi", "iac", "credentials"]
+
+  - id: reddit-api-credentials
+    name: "Reddit API Credentials"
+    pattern: "(?i)(?:reddit).*?(?:client_id|client_secret|password).*?['\"]?[A-Za-z0-9_-]{10,}['\"]?"
+    severity: "medium"
+    description: "Reddit API credentials pattern"
+    tags: ["reddit", "credentials"]
+
+  - id: salesforce-access-token
+    name: "Salesforce Access Token"
+    pattern: "(?i)00D[A-Za-z0-9]{12,}!([A-Za-z0-9._-]+)(?![A-Za-z0-9._-])"
+    severity: "high"
+    description: "Salesforce access token (00D org ID prefix)"
+    tags: ["salesforce", "token", "credentials"]
+
+  - id: sendinblue-api-key
+    name: "Sendinblue API Key"
+    pattern: "(?i)(?:sendinblue|brevo).*?(?:api_key|apikey).*?['\"]?[a-z0-9]{64}['\"]?"
+    severity: "high"
+    description: "Sendinblue/Brevo API key"
+    tags: ["sendinblue", "brevo", "email", "credentials"]
+
+  - id: shopify-access-token
+    name: "Shopify Access Token"
+    pattern: "(?i)(?:shpca_|shpat_|shppa_)[a-f0-9]{32}(?![a-f0-9])"
+    severity: "high"
+    description: "Shopify access token (shpca_, shpat_, shppa_ prefixes)"
+    tags: ["shopify", "ecommerce", "credentials"]
+
+  - id: slack-webhook-url
+    name: "Slack Webhook URL"
+    pattern: "(?i)https://hooks\\.slack\\.com/services/[A-Za-z0-9/]{10,}"
+    severity: "medium"
+    description: "Slack incoming webhook URL"
+    tags: ["slack", "webhook", "integration"]
+
+  - id: spotify-client-secret
+    name: "Spotify Client Secret"
+    pattern: "(?i)(?:spotify).*?(?:client_secret|secret).*?['\"]?[a-f0-9]{32}['\"]?"
+    severity: "high"
+    description: "Spotify client secret"
+    tags: ["spotify", "credentials"]
+
+  - id: square-oauth-secret
+    name: "Square OAuth Secret"
+    pattern: "(?i)(?:square).*?(?:client_secret|secret).*?['\"]?[A-Za-z0-9_-]{20,}['\"]?"
+    severity: "high"
+    description: "Square OAuth secret"
+    tags: ["square", "payment", "credentials"]
+
+  - id: stripe-restricted-api-key
+    name: "Stripe Restricted API Key"
+    pattern: "(?<![A-Za-z0-9])[a-z]{2,5}_test_[a-zA-Z0-9]{24,}(?![a-zA-Z0-9])"
+    severity: "high"
+    description: "Stripe restricted API key"
+    tags: ["stripe", "payment", "credentials"]
+
+  - id: telegram-bot-token
+    name: "Telegram Bot Token"
+    pattern: "(?<![0-9])[0-9]{8,10}:[A-Za-z0-9_-]{35}(?![A-Za-z0-9_-])"
+    severity: "critical"
+    description: "Telegram bot token (numbers:token format)"
+    tags: ["telegram", "bot", "credentials"]
+
+  - id: tiktok-api-secret
+    name: "TikTok API Secret"
+    pattern: "(?i)(?:tiktok).*?(?:client_secret|secret).*?['\"]?[A-Za-z0-9_-]{20,}['\"]?"
+    severity: "high"
+    description: "TikTok API secret"
+    tags: ["tiktok", "credentials"]
+
+  - id: trello-api-key
+    name: "Trello API Key/Token"
+    pattern: "(?i)(?:trello).*?(?:api_key|apikey|token).*?['\"]?[A-Za-z0-9]{32}['\"]?"
+    severity: "medium"
+    description: "Trello API key or token"
+    tags: ["trello", "api-key"]
+
+  - id: twitter-api-credentials
+    name: "Twitter/X API Credentials"
+    pattern: "(?i)(?:twitter|x).*?(?:api_key|api_secret|bearer_token|consumer_key|consumer_secret).*?['\"]?[A-Za-z0-9_-]{10,}['\"]?"
+    severity: "medium"
+    description: "Twitter/X API credentials pattern"
+    tags: ["twitter", "x", "credentials"]
+
+  - id: vault-token
+    name: "HashiCorp Vault Token"
+    pattern: "(?<![A-Za-z0-9])s\\.[A-Za-z0-9_-]{20,}(?![A-Za-z0-9_-])"
+    severity: "high"
+    description: "HashiCorp Vault service token"
+    tags: ["vault", "hashicorp", "credentials"]
+
+  - id: vimeo-access-token
+    name: "Vimeo Access Token"
+    pattern: "(?i)(?:vimeo).*?(?:access_token|token).*?['\"]?[A-Za-z0-9_-]{20,}['\"]?"
+    severity: "medium"
+    description: "Vimeo access token pattern"
+    tags: ["vimeo", "token"]
+
+  - id: zoho-api-token
+    name: "Zoho API Token"
+    pattern: "(?i)(?:zoho).*?(?:authtoken|access_token).*?['\"]?[A-Za-z0-9_-]{20,}['\"]?"
+    severity: "medium"
+    description: "Zoho API token pattern"
+    tags: ["zoho", "token"]
+
+  - id: zoom-jwt-token
+    name: "Zoom JWT Token"
+    pattern: "(?i)(?:zoom).*?(?:api_key|api_secret|jwt_token).*?['\"]?[A-Za-z0-9_-]{20,}['\"]?"
+    severity: "medium"
+    description: "Zoom API credentials pattern"
+    tags: ["zoom", "credentials"]

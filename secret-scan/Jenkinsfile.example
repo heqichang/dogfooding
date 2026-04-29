@@ -1,0 +1,81 @@
+pipeline {
+    agent {
+        docker {
+            image 'python:3.10-slim'
+        }
+    }
+    
+    environment {
+        // Optional: Configure secret-scan behavior
+        SECRET_SCAN_FAIL = 'true'  // Set to 'false' for warning only
+    }
+    
+    stages {
+        stage('Security Scan') {
+            steps {
+                echo 'Installing secret-scan...'
+                sh 'pip install --upgrade pip'
+                sh 'pip install git+https://github.com/your-org/secret-scan.git@main'
+                // Or install from local workspace:
+                // sh 'pip install .'
+                
+                echo 'Running secret scan...'
+                script {
+                    def isPullRequest = env.CHANGE_ID != null
+                    
+                    if (isPullRequest) {
+                        echo "Running in Pull Request mode (Change ID: ${env.CHANGE_ID})"
+                        // Try to scan just the diff
+                        try {
+                            sh "secret-scan scan --diff ${env.CHANGE_TARGET}..${env.CHANGE_BRANCH} --json secret-scan-report.json"
+                        } catch (Exception e) {
+                            echo "Diff scan failed, falling back to full scan: ${e.getMessage()}"
+                            sh 'secret-scan scan --full --json secret-scan-report.json'
+                        }
+                    } else {
+                        echo "Running full scan on branch: ${env.BRANCH_NAME}"
+                        sh 'secret-scan scan --full --json secret-scan-report.json'
+                    }
+                }
+            }
+            post {
+                always {
+                    echo 'Archiving scan report...'
+                    archiveArtifacts artifacts: 'secret-scan-report.json', fingerprint: true
+                }
+                success {
+                    echo '✅ No secrets found or scan passed!'
+                }
+                failure {
+                    echo '❌ Secrets detected in the codebase!'
+                    // Optional: Send notifications
+                    // emailext subject: 'SECRET SCAN FAILED', body: 'Secrets were detected in the codebase. Please check the build artifacts for details.', to: 'dev-team@example.com'
+                }
+            }
+        }
+    }
+}
+
+// Alternative: Pipeline with warning-only mode
+pipeline {
+    agent any
+    
+    stages {
+        stage('Security Scan (Warning)') {
+            steps {
+                echo 'Installing secret-scan...'
+                sh 'pip install --upgrade pip'
+                sh 'pip install git+https://github.com/your-org/secret-scan.git@main'
+                
+                echo 'Running secret scan (warning-only mode)...'
+                // Use --no-fail to not block the pipeline
+                sh 'secret-scan scan --full --no-fail --json secret-scan-report.json || true'
+            }
+            post {
+                always {
+                    archiveArtifacts artifacts: 'secret-scan-report.json', fingerprint: true
+                }
+            }
+        }
+    }
+}

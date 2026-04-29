@@ -1,0 +1,31 @@
+- id: secret-scan
+  name: Secret Scan
+  entry: secret-scan scan --staged
+  language: python
+  types: [text]
+  description: "Scan staged changes for secrets before commit"
+  pass_filenames: false
+
+- id: secret-scan-full
+  name: Secret Scan (Full)
+  entry: secret-scan scan --full
+  language: python
+  types: [text]
+  description: "Scan all files for secrets"
+  pass_filenames: false
+
+- id: secret-scan-verbose
+  name: Secret Scan (Verbose)
+  entry: secret-scan scan --staged --verbose
+  language: python
+  types: [text]
+  description: "Scan staged changes for secrets with verbose output"
+  pass_filenames: false
+
+- id: secret-scan-no-fail
+  name: Secret Scan (Warning Only)
+  entry: secret-scan scan --staged --no-fail
+  language: python
+  types: [text]
+  description: "Scan staged changes for secrets (warning only, does not block commit)"
+  pass_filenames: false
